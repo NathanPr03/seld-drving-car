@@ -1,5 +1,6 @@
 #include <QTRSensors.h>
-    
+#include "HUSKYLENS.h"
+
 using namespace std;
 
 int motorLeft[] = {A4, A5};
@@ -8,6 +9,7 @@ int motorRight[] = {D6, D5};
 int onBoardLed = D7;
 
 QTRSensors qtr;
+HUSKYLENS huskylens;
 
 const uint8_t SensorCount = 3;
 uint16_t sensorValues[SensorCount];
@@ -21,7 +23,16 @@ const int LARGE_DISPARITY_BETWEEN_SENSORS = 60;
 void setup() {
     Serial.begin(9600);
 
-    qtr.setTypeRC();
+    Wire.begin();
+    while (!huskylens.begin(Wire))
+    {
+        Serial.println(F("Begin failed!"));
+        Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+        Serial.println(F("2.Please recheck the connection."));
+        delay(100);
+    }
+
+    qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
@@ -64,8 +75,44 @@ enum direction { TURN_LEFT_GRADUAL = 0, STRAIGHT_AHEAD = 1, TURN_RIGHT_GRADUAL =
 
 void loop() {
     Serial.println("Start of loop");
-
+    huskyLens();
     useSensors();
+}
+
+void huskyLens()
+{
+    if (!huskylens.request()) Serial.println(F("Fail to request data from HUSKYLENS, recheck the connection!"));
+    else if(!huskylens.isLearned()) Serial.println(F("Nothing learned, press learn button on HUSKYLENS to learn one!"));
+    else if(!huskylens.available()) Serial.println(F("No block or arrow appears on the screen!"));
+    else
+    {
+        Serial.println(F("###########"));
+        while (huskylens.available())
+        {
+            HUSKYLENSResult result = huskylens.read();
+            printResult(result);
+            if(result.ID == 1){
+                motor_stop(2000);
+            }
+        }    
+    }
+}
+
+void printResult(HUSKYLENSResult result)
+{
+    if (result.command == COMMAND_RETURN_BLOCK){
+        Serial.println(String()+F("Block:xCenter=")+result.xCenter+F(",yCenter=")+result.yCenter+F(",width=")+result.width+F(",height=")+result.height+F(",ID=")+result.ID);
+    }
+    else if (result.command == COMMAND_RETURN_ARROW){
+        Serial.println(String()+F("Arrow:xOrigin=")+result.xOrigin+F(",yOrigin=")+result.yOrigin+F(",xTarget=")+result.xTarget+F(",yTarget=")+result.yTarget+F(",ID=")+result.ID);
+    }
+    else{
+        Serial.println("Object unknown!");
+    }
+
+    if(result.ID == 1){
+        Serial.println("Person spotted");
+    }
 }
 
 void drive(int direction)
@@ -241,4 +288,3 @@ bool black_line_on_left() {
 bool black_line_on_right() {
     return sensorValues[RIGHT_SENSOR] > sensorValues[LEFT_SENSOR] && sensorValues[RIGHT_SENSOR] > sensorValues[MIDDLE_SENSOR];
 }
-

@@ -5,9 +5,12 @@
 #include "Particle.h"
 #line 1 "/Users/nathan/repos/particle/SeldDrivingCar/src/SeldDrivingCar.ino"
 #include <QTRSensors.h>
-    
+#include "HUSKYLENS.h"
+
 void setup();
 void loop();
+void huskyLens();
+void printResult(HUSKYLENSResult result);
 void useSensors();
 void led_on(int led);
 void led_off(int led);
@@ -24,7 +27,7 @@ bool right_hard_turn();
 bool left_hard_turn();
 bool black_line_on_left();
 bool black_line_on_right();
-#line 3 "/Users/nathan/repos/particle/SeldDrivingCar/src/SeldDrivingCar.ino"
+#line 4 "/Users/nathan/repos/particle/SeldDrivingCar/src/SeldDrivingCar.ino"
 using namespace std;
 
 int motorLeft[] = {A4, A5};
@@ -32,10 +35,8 @@ int motorRight[] = {D6, D5};
 
 int onBoardLed = D7;
 
-int rightIndicator = D2;
-int leftIndicator = D8;
-
 QTRSensors qtr;
+HUSKYLENS huskylens;
 
 const uint8_t SensorCount = 3;
 uint16_t sensorValues[SensorCount];
@@ -44,17 +45,24 @@ const int LEFT_SENSOR = 0;
 const int MIDDLE_SENSOR = 1;
 const int RIGHT_SENSOR = 2;
 
-const int LARGE_DISPARITY_BETWEEN_SENSORS = 30;
-
+const int LARGE_DISPARITY_BETWEEN_SENSORS = 60;
+ 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Start of setup real yin");
-    qtr.setTypeRC();
+
+    Wire.begin();
+    while (!huskylens.begin(Wire))
+    {
+        Serial.println(F("Begin failed!"));
+        Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+        Serial.println(F("2.Please recheck the connection."));
+        delay(100);
+    }
+
+    qtr.setTypeRC();    
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
-    pinMode(leftIndicator, OUTPUT);
-    pinMode(rightIndicator, OUTPUT);
 
     for(int i = 0; i < 2; i++){
         pinMode(motorLeft[i], OUTPUT);
@@ -70,7 +78,7 @@ void setup() {
     {
         qtr.calibrate();
     }
-    led_off(onBoardLed); // turn off Arduino's LED to indicate we are through with calibration
+    led_off(onBoardLed); 
 
     for (uint8_t i = 0; i < SensorCount; i++)
     {
@@ -94,33 +102,57 @@ enum direction { TURN_LEFT_GRADUAL = 0, STRAIGHT_AHEAD = 1, TURN_RIGHT_GRADUAL =
 
 void loop() {
     Serial.println("Start of loop");
-
+    huskyLens();
     useSensors();
-    //motor_stop(2);
-    //delay(3000);
-    //drive_forward(10000);
-    
-    // drive_backward(10000);
-    // motor_stop(25);
-    // turn_left(10000);
-    // motor_stop(25);
-    // turn_right(10000);
-    // motor_stop(10000);
+}
+
+void huskyLens()
+{
+    if (!huskylens.request()) Serial.println(F("Fail to request data from HUSKYLENS, recheck the connection!"));
+    else if(!huskylens.isLearned()) Serial.println(F("Nothing learned, press learn button on HUSKYLENS to learn one!"));
+    else if(!huskylens.available()) Serial.println(F("No block or arrow appears on the screen!"));
+    else
+    {
+        Serial.println(F("###########"));
+        while (huskylens.available())
+        {
+            HUSKYLENSResult result = huskylens.read();
+            printResult(result);
+            if(result.ID == 1){
+                motor_stop(2000);
+            }
+        }    
+    }
+}
+
+void printResult(HUSKYLENSResult result)
+{
+    if (result.command == COMMAND_RETURN_BLOCK){
+        Serial.println(String()+F("Block:xCenter=")+result.xCenter+F(",yCenter=")+result.yCenter+F(",width=")+result.width+F(",height=")+result.height+F(",ID=")+result.ID);
+    }
+    else if (result.command == COMMAND_RETURN_ARROW){
+        Serial.println(String()+F("Arrow:xOrigin=")+result.xOrigin+F(",yOrigin=")+result.yOrigin+F(",xTarget=")+result.xTarget+F(",yTarget=")+result.yTarget+F(",ID=")+result.ID);
+    }
+    else{
+        Serial.println("Object unknown!");
+    }
+
+    if(result.ID == 1){
+        Serial.println("Person spotted");
+    }
 }
 
 void drive(int direction)
 {
     switch(direction) {
         case(TURN_LEFT_GRADUAL):
-            //turn_left_gradual(1);
-            turn_left_hard(1);
+            turn_left_gradual(1);
             break;
         case(TURN_RIGHT_GRADUAL):
-            //turn_right_gradual(1);
-            turn_right_hard(4);
+            turn_right_gradual(1);
             break;
         case(TURN_RIGHT_HARD):
-            turn_right_hard(4);
+            turn_right_hard(1);
             break;
         case(TURN_LEFT_HARD):
             turn_left_hard(1);
@@ -144,11 +176,6 @@ void useSensors(){
 
     Serial.println("Value for right sensor ");
     Serial.println(String(sensorValues[2]));
-
-
-    // uint8_t black_line_pos = qtr.readLineBlack(sensorValues);
-    // Serial.println("Black line");
-    // Serial.println(String(black_line_pos));
 
     int direction = calculate_direction(sensorValues);
 
@@ -288,4 +315,3 @@ bool black_line_on_left() {
 bool black_line_on_right() {
     return sensorValues[RIGHT_SENSOR] > sensorValues[LEFT_SENSOR] && sensorValues[RIGHT_SENSOR] > sensorValues[MIDDLE_SENSOR];
 }
-
