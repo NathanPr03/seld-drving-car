@@ -7,9 +7,6 @@ int motorRight[] = {D6, D5};
 
 int onBoardLed = D7;
 
-int rightIndicator = D2;
-int leftIndicator = D8;
-
 QTRSensors qtr;
 
 const uint8_t SensorCount = 3;
@@ -19,17 +16,15 @@ const int LEFT_SENSOR = 0;
 const int MIDDLE_SENSOR = 1;
 const int RIGHT_SENSOR = 2;
 
-const int LARGE_DISPARITY_BETWEEN_SENSORS = 30;
-
+const int LARGE_DISPARITY_BETWEEN_SENSORS = 60;
+ 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Start of setup real yin");
+
     qtr.setTypeRC();
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
-    pinMode(leftIndicator, OUTPUT);
-    pinMode(rightIndicator, OUTPUT);
 
     for(int i = 0; i < 2; i++){
         pinMode(motorLeft[i], OUTPUT);
@@ -45,7 +40,7 @@ void setup() {
     {
         qtr.calibrate();
     }
-    led_off(onBoardLed); // turn off Arduino's LED to indicate we are through with calibration
+    led_off(onBoardLed); 
 
     for (uint8_t i = 0; i < SensorCount; i++)
     {
@@ -71,16 +66,6 @@ void loop() {
     Serial.println("Start of loop");
 
     useSensors();
-    //motor_stop(2);
-    //delay(3000);
-    //drive_forward(10000);
-    
-    // drive_backward(10000);
-    // motor_stop(25);
-    // turn_left(10000);
-    // motor_stop(25);
-    // turn_right(10000);
-    // motor_stop(10000);
 }
 
 void drive(int direction)
