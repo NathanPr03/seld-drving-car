@@ -32,7 +32,7 @@ void setup() {
         delay(100);
     }
 
-    qtr.setTypeRC();    
+    qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);

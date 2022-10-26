@@ -1,6 +1,6 @@
-# SeldDrivingCar
+# SelfDrivingCar
 
-A Particle project named SeldDrivingCar
+A Particle project named SelfDrivingCar
 
 ## Welcome to your project!
 
