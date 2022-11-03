@@ -1,9 +1,8 @@
 #include "MotorController.cpp"
-#include "application.h"
 
 class Command {
 private:
-    int motors_power[4]{};
+    int motors_power[4];
 public:
     virtual void execute() = 0;
 
@@ -16,14 +15,13 @@ private:
     int motorsPower[4] = {0, 1, 1, 0};
     int reversedMotorsPower[4] = {1, 0, 1, 0};
 public:
-    ~DriveStraightCommand()= default;
+    ~DriveStraightCommand(){}
 
-    void execute() override {
+    void execute() {
         motorController->drive(motorsPower);
     }
 
-    void undo() override {
-        Serial.println("UNDO FUNCTION IS CALLED");
+    void undo() {
         motorController->drive(reversedMotorsPower);
     }
 };
@@ -36,12 +34,11 @@ private:
 public:
     ~DriveRightCommand(){}
 
-    void execute() override {
+    void execute() {
         motorController->drive(motorsPower);
     }
 
-    void undo() override {
-        Serial.println("UNDO FUNCTION IS CALLED");
+    void undo() {
         motorController->drive(reversedMotorsPower);
     }
 };
@@ -52,14 +49,13 @@ private:
     int motorsPower[4] = {1, 0, 1, 0};
     int reversedMotorsPower[4] = {0, 1, 0, 1};
 public:
-    ~DriveRightHardCommand()= default;
+    ~DriveRightHardCommand(){}
 
-    void execute() override {
+    void execute() {
         motorController->drive(motorsPower);
     }
 
-    void undo() override {
-        Serial.println("UNDO FUNCTION IS CALLED");
+    void undo() {
         motorController->drive(reversedMotorsPower);
     }
 };
@@ -70,14 +66,11 @@ private:
     int motorsPower[4] = {0, 1, 0, 0};
     int reversedMotorsPower[4] = {0, 0, 1, 0};
 public:
-    ~DriveLeftCommand()= default;
-
-    void execute() override {
+    void execute() {
         motorController->drive(motorsPower);
     }
 
-    void undo() override {
-        Serial.println("UNDO FUNCTION IS CALLED");
+    void undo() {
         motorController->drive(reversedMotorsPower);
     }
 };
@@ -88,14 +81,11 @@ private:
     int motorsPower[4] = {0, 1, 0, 1};
     int reversedMotorsPower[4] = {1, 0, 1, 0};
 public:
-    ~DriveLeftHardCommand()= default;
-
-    void execute() override {
+    void execute() {
         motorController->drive(motorsPower);
     }
 
-    void undo() override {
-        Serial.println("UNDO FUNCTION IS CALLED");
+    void undo() {
         motorController->drive(reversedMotorsPower);
     }
 };

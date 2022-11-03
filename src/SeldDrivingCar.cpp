@@ -13,7 +13,7 @@ void loop();
 void huskyLens();
 void printResult(HUSKYLENSResult result);
 void useSensors();
-void calculate_direction();
+void calculate_direction(uint16_t sensorValues[]);
 void motor_stop(int duration);
 void led_on(int led);
 void led_off(int led);
@@ -47,7 +47,7 @@ CommandFactory* commandFactory = new CommandFactory();
 Command* driveCommand;
 
 void setup() {
-    Serial.println("Command pattern 2 :)");
+    Serial.println("Command pattern :)");
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
 
@@ -105,7 +105,7 @@ void loop() {
     Serial.println("Start of loop");
     huskyLens();
     useSensors();
-    delay(3000);
+    delay(2000);
 }
 
 void huskyLens()
@@ -156,12 +156,12 @@ void useSensors(){
     Serial.println("Value for right sensor ");
     Serial.println(String(sensorValues[2]));
 
-    calculate_direction();
+    calculate_direction(sensorValues);
 
     driveCommand->execute();
 }
 
-void calculate_direction(){
+void calculate_direction(uint16_t sensorValues[]){
     if(black_line_in_middle()){
         Serial.println("MIDDLE IS CALLED");
         driveCommand = commandFactory->create(STRAIGHT_AHEAD);
