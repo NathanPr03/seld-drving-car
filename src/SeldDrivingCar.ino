@@ -134,13 +134,17 @@ void useSensors(){
 
     Serial.println("Value for right sensor ");
     Serial.println(String(sensorValues[2]));
+    digitalWrite(motorLeft[0], HIGH);
+    digitalWrite(motorLeft[1], HIGH);
 
-    calculate_direction(sensorValues);
+    digitalWrite(motorRight[0], HIGH);
+    digitalWrite(motorRight[1], HIGH);
+    // calculate_direction();
 
-    driveCommand->execute();
+    // driveCommand->execute();
 }
 
-void calculate_direction(uint16_t sensorValues[]){
+void calculate_direction(){
     if(black_line_in_middle()){
         Serial.println("MIDDLE IS CALLED");
         driveCommand = commandFactory->create(STRAIGHT_AHEAD);
@@ -158,7 +162,9 @@ void calculate_direction(uint16_t sensorValues[]){
         driveCommand = commandFactory->create(TURN_RIGHT_GRADUAL);
     }else{
         Serial.println("UNDO IS CALLED");
-        driveCommand->undo();
+        if(driveCommand != NULL){
+            driveCommand->undo();
+        }
     }
 }
 
