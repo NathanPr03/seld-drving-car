@@ -4,6 +4,9 @@
 
 using namespace std;
 
+int motorLeft[2] = {A4, A5};
+int motorRight[2] = {D6, D5};
+
 int onBoardLed = D7;
 
 QTRSensors qtr;
@@ -15,22 +18,19 @@ uint16_t sensorValues[SensorCount];
 const int LEFT_SENSOR = 0;
 const int MIDDLE_SENSOR = 1;
 const int RIGHT_SENSOR = 2;
-
 const int LARGE_DISPARITY_BETWEEN_SENSORS = 60;
 
-int vehicleStatus;  
-int motorLeft[2] = {A4, A5};
-int motorRight[2] = {D6, D5};
+int vehicleStatus;
 
 CommandFactory* commandFactory = new CommandFactory();
 Command* driveCommand;
 
 void setup() {
+    Serial.begin(9600);
     Serial.println("Command pattern :)");
+
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
-
-    Serial.begin(9600);
 
     Wire.begin();
     while (!huskylens.begin(Wire))
@@ -46,10 +46,10 @@ void setup() {
     
     pinMode(onBoardLed, OUTPUT);
 
-    for(int i = 0; i < 2; i++){
-        pinMode(motorLeft[i], OUTPUT);
-        pinMode(motorRight[i], OUTPUT);
-    }
+    // for(int i = 0; i < 2; i++){
+    //     pinMode(motorLeft[i], OUTPUT);
+    //     pinMode(motorRight[i], OUTPUT);
+    // }
     
     led_on(onBoardLed);
     // analogRead() takes about 0.1 ms on an AVR.
@@ -76,12 +76,16 @@ void setup() {
         Serial.println(String(qtr.calibrationOn.maximum[i]));
     } 
     Serial.println("End of setup");
-    delay(5000);
-
+    //delay(5000);
 }
 
 void loop() {
     Serial.println("Start of loop");
+    // digitalWrite(motorLeft[0], HIGH);
+    // digitalWrite(motorLeft[1], LOW);
+
+    // digitalWrite(motorRight[0], LOW);
+    // digitalWrite(motorRight[1], HIGH);
     huskyLens();
     useSensors();
     delay(2000);
@@ -101,7 +105,7 @@ void huskyLens()
             printResult(result);
             if(result.ID == 1){
                 vehicleStatus = ENCOUNTERED_OBSTACLE;
-                motor_stop(2000);
+                //motor_stop(2000);
             }
         }    
     }
@@ -134,50 +138,34 @@ void useSensors(){
 
     Serial.println("Value for right sensor ");
     Serial.println(String(sensorValues[2]));
-    digitalWrite(motorLeft[0], HIGH);
-    digitalWrite(motorLeft[1], HIGH);
 
-    digitalWrite(motorRight[0], HIGH);
-    digitalWrite(motorRight[1], HIGH);
-    // calculate_direction();
+    calculate_direction();
 
-    // driveCommand->execute();
+    driveCommand->execute();
 }
 
 void calculate_direction(){
     if(black_line_in_middle()){
         Serial.println("MIDDLE IS CALLED");
-        driveCommand = commandFactory->create(STRAIGHT_AHEAD);
+        driveCommand = commandFactory->create(STRAIGHT_AHEAD, motorLeft, motorRight);
     }else if (right_hard_turn()) {
         Serial.println("HARD RIGHT IS CALLED");
-        driveCommand = commandFactory->create(TURN_RIGHT_HARD);
+        driveCommand = commandFactory->create(TURN_RIGHT_HARD, motorLeft, motorRight);
     }else if (left_hard_turn()){
         Serial.println("HARD LEFT IS CALLED");
-        driveCommand = commandFactory->create(TURN_LEFT_HARD);
+        driveCommand = commandFactory->create(TURN_LEFT_HARD, motorLeft, motorRight);
     }else if(black_line_on_left()) {
         Serial.println("LEFT IS CALLED");
-        driveCommand = commandFactory->create(TURN_LEFT_GRADUAL);
+        driveCommand = commandFactory->create(TURN_LEFT_GRADUAL, motorLeft, motorRight);
     }else if(black_line_on_right()){
         Serial.println("RIGHT IS CALLED");
-        driveCommand = commandFactory->create(TURN_RIGHT_GRADUAL);
+        driveCommand = commandFactory->create(TURN_RIGHT_GRADUAL, motorLeft, motorRight);
     }else{
         Serial.println("UNDO IS CALLED");
         if(driveCommand != NULL){
             driveCommand->undo();
         }
     }
-}
-
-void motor_stop(int duration) {
-    Serial.println("Stopping");
-
-    digitalWrite(motorLeft[0], LOW);
-    digitalWrite(motorLeft[1], LOW);
-
-    digitalWrite(motorRight[0], LOW);
-    digitalWrite(motorRight[1], LOW);
-
-    delay(duration);
 }
 
 void led_on(int led){

@@ -15,6 +15,9 @@ private:
     int motorsPower[4] = {0, 1, 1, 0};
     int reversedMotorsPower[4] = {1, 0, 1, 0};
 public:
+    DriveStraightCommand(int motorLeft[], int motorRight[]){
+        motorController = new MotorController(motorLeft, motorRight);
+    }
     ~DriveStraightCommand(){}
 
     void execute() {
@@ -32,6 +35,9 @@ private:
     int motorsPower[4] = {0, 0, 1, 0};
     int reversedMotorsPower[4] = {0, 1, 0, 0};
 public:
+    DriveRightCommand(int motorLeft[], int motorRight[]){
+        motorController = new MotorController(motorLeft, motorRight);
+    }
     ~DriveRightCommand(){}
 
     void execute() {
@@ -49,6 +55,9 @@ private:
     int motorsPower[4] = {1, 0, 1, 0};
     int reversedMotorsPower[4] = {0, 1, 0, 1};
 public:
+    DriveRightHardCommand(int motorLeft[], int motorRight[]){
+        motorController = new MotorController(motorLeft, motorRight);
+    }
     ~DriveRightHardCommand(){}
 
     void execute() {
@@ -66,6 +75,9 @@ private:
     int motorsPower[4] = {0, 1, 0, 0};
     int reversedMotorsPower[4] = {0, 0, 1, 0};
 public:
+    DriveLeftCommand(int motorLeft[], int motorRight[]){
+        motorController = new MotorController(motorLeft, motorRight);
+    }
     void execute() {
         motorController->drive(motorsPower);
     }
@@ -81,6 +93,9 @@ private:
     int motorsPower[4] = {0, 1, 0, 1};
     int reversedMotorsPower[4] = {1, 0, 1, 0};
 public:
+    DriveLeftHardCommand(int motorLeft[], int motorRight[]){
+        motorController = new MotorController(motorLeft, motorRight);
+    }
     void execute() {
         motorController->drive(motorsPower);
     }
