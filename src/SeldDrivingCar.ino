@@ -1,7 +1,6 @@
 #include <QTRSensors.h>
 #include "HUSKYLENS.h"
-#include "CommandFactory.h"
-#include "enums.h"
+#include "CommandFactory.cpp"
 
 using namespace std;
 
@@ -23,10 +22,11 @@ int vehicleStatus;
 int motorLeft[2] = {A4, A5};
 int motorRight[2] = {D6, D5};
 
-CommandFactory* commandFactory;
+CommandFactory* commandFactory = new CommandFactory();
 Command* driveCommand;
 
 void setup() {
+    Serial.println("Command pattern :)");
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
 

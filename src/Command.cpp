@@ -1,7 +1,4 @@
-#include <algorithm>
-#include <valarray>
-#include "MotorController.h"
-#include "enums.h"
+#include "MotorController.cpp"
 
 class Command {
 private:
@@ -18,6 +15,8 @@ private:
     int motorsPower[4] = {0, 1, 1, 0};
     int reversedMotorsPower[4] = {1, 0, 1, 0};
 public:
+    ~DriveStraightCommand(){}
+
     void execute() {
         motorController->drive(motorsPower);
     }
@@ -33,6 +32,8 @@ private:
     int motorsPower[4] = {0, 0, 1, 0};
     int reversedMotorsPower[4] = {0, 1, 0, 0};
 public:
+    ~DriveRightCommand(){}
+
     void execute() {
         motorController->drive(motorsPower);
     }
@@ -48,6 +49,8 @@ private:
     int motorsPower[4] = {1, 0, 1, 0};
     int reversedMotorsPower[4] = {0, 1, 0, 1};
 public:
+    ~DriveRightHardCommand(){}
+
     void execute() {
         motorController->drive(motorsPower);
     }

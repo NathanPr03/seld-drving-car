@@ -24,7 +24,7 @@ public:
     void drive(int motorPower[4]) {
         digitalWrite(motorLeft[0], motorPower[0]);
         digitalWrite(motorLeft[1], motorPower[1]);
-        digitalWrite(motorLeft[2], motorPower[2]);
-        digitalWrite(motorLeft[3], motorPower[3]);
+        digitalWrite(motorRight[0], motorPower[2]);
+        digitalWrite(motorRight[1], motorPower[3]);
     }
 };
