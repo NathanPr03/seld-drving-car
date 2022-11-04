@@ -88,7 +88,7 @@ void loop() {
     // digitalWrite(motorRight[1], HIGH);
     huskyLens();
     useSensors();
-    delay(2000);
+    //delay(2000);
 }
 
 void huskyLens()
@@ -147,22 +147,28 @@ void useSensors(){
 void calculate_direction(){
     if(black_line_in_middle()){
         Serial.println("MIDDLE IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(STRAIGHT_AHEAD, motorLeft, motorRight);
     }else if (right_hard_turn()) {
         Serial.println("HARD RIGHT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_RIGHT_HARD, motorLeft, motorRight);
     }else if (left_hard_turn()){
         Serial.println("HARD LEFT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_LEFT_HARD, motorLeft, motorRight);
     }else if(black_line_on_left()) {
         Serial.println("LEFT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_LEFT_GRADUAL, motorLeft, motorRight);
     }else if(black_line_on_right()){
         Serial.println("RIGHT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_RIGHT_GRADUAL, motorLeft, motorRight);
     }else{
         Serial.println("UNDO IS CALLED");
         if(driveCommand != NULL){
+            vehicleStatus = MOVING;
             driveCommand->undo();
         }
     }

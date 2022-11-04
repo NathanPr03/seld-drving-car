@@ -18,15 +18,15 @@ public:
 
     void drive(int motorPower[4]) {
         Serial.println("Drive has been called!");
-        // digitalWrite(motorLeft[0], motorPower[0]);
-        // digitalWrite(motorLeft[1], motorPower[1]);
-        // digitalWrite(motorRight[0], motorPower[2]);
-        // digitalWrite(motorRight[1], motorPower[3]);
-        digitalWrite(_motorLeft[1], HIGH);
-        digitalWrite(_motorLeft[0], LOW);
+        digitalWrite(_motorLeft[0], motorPower[0]);
+        digitalWrite(_motorLeft[1], motorPower[1]);
+        digitalWrite(_motorRight[0], motorPower[2]);
+        digitalWrite(_motorRight[1], motorPower[3]);
+        // digitalWrite(_motorLeft[1], HIGH);
+        // digitalWrite(_motorLeft[0], LOW);
 
-        digitalWrite(_motorRight[1], LOW);
-        digitalWrite(_motorRight[0], HIGH);
+        // digitalWrite(_motorRight[1], LOW);
+        // digitalWrite(_motorRight[0], HIGH);
     }
 
 private:
