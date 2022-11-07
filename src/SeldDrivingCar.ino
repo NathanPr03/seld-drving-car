@@ -45,11 +45,6 @@ void setup() {
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
-
-    // for(int i = 0; i < 2; i++){
-    //     pinMode(motorLeft[i], OUTPUT);
-    //     pinMode(motorRight[i], OUTPUT);
-    // }
     
     led_on(onBoardLed);
     // analogRead() takes about 0.1 ms on an AVR.
@@ -84,7 +79,7 @@ void loop() {
     
     huskyLens();
     useSensors();
-    delay(1000);
+    //delay(1000);
 }
 
 void huskyLens()
