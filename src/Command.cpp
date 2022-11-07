@@ -18,7 +18,9 @@ public:
     DriveStraightCommand(int motorLeft[], int motorRight[]){
         motorController = new MotorController(motorLeft, motorRight);
     }
-    ~DriveStraightCommand(){}
+    ~DriveStraightCommand(){
+        delete motorController;
+    }
 
     void execute() {
         motorController->drive(motorsPower);
@@ -38,7 +40,9 @@ public:
     DriveRightCommand(int motorLeft[], int motorRight[]){
         motorController = new MotorController(motorLeft, motorRight);
     }
-    ~DriveRightCommand(){}
+    ~DriveRightCommand(){
+        delete motorController;
+    }
 
     void execute() {
         motorController->drive(motorsPower);
@@ -58,7 +62,9 @@ public:
     DriveRightHardCommand(int motorLeft[], int motorRight[]){
         motorController = new MotorController(motorLeft, motorRight);
     }
-    ~DriveRightHardCommand(){}
+    ~DriveRightHardCommand(){
+        delete motorController;
+    }
 
     void execute() {
         motorController->drive(motorsPower);
@@ -78,6 +84,10 @@ public:
     DriveLeftCommand(int motorLeft[], int motorRight[]){
         motorController = new MotorController(motorLeft, motorRight);
     }
+
+    ~DriveLeftCommand(){
+        delete motorController;
+    }
     void execute() {
         motorController->drive(motorsPower);
     }
@@ -96,6 +106,11 @@ public:
     DriveLeftHardCommand(int motorLeft[], int motorRight[]){
         motorController = new MotorController(motorLeft, motorRight);
     }
+
+    ~DriveLeftHardCommand(){
+        delete motorController;
+    }
+    
     void execute() {
         motorController->drive(motorsPower);
     }

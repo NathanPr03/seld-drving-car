@@ -81,14 +81,10 @@ void setup() {
 
 void loop() {
     Serial.println("Start of loop");
-    // digitalWrite(motorLeft[0], HIGH);
-    // digitalWrite(motorLeft[1], LOW);
-
-    // digitalWrite(motorRight[0], LOW);
-    // digitalWrite(motorRight[1], HIGH);
+    
     huskyLens();
     useSensors();
-    //delay(2000);
+    delay(1000);
 }
 
 void huskyLens()
@@ -141,7 +137,9 @@ void useSensors(){
 
     calculate_direction();
 
-    driveCommand->execute();
+    if(driveCommand != NULL) {
+        driveCommand->execute();
+    }
 }
 
 void calculate_direction(){
