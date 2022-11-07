@@ -4,8 +4,8 @@
 
 using namespace std;
 
-int motorLeft[2] = {A4, A5};
-int motorRight[2] = {D6, D5};
+int motorLeft[] = {A4, A5};
+int motorRight[] = {D6, D5};
 
 int onBoardLed = D7;
 
@@ -32,14 +32,14 @@ void setup() {
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
 
-    Wire.begin();
-    while (!huskylens.begin(Wire))
-    {
-        Serial.println(F("Begin failed!"));
-        Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
-        Serial.println(F("2.Please recheck the connection."));
-        delay(100);
-    }
+    // Wire.begin();
+    // while (!huskylens.begin(Wire))
+    // {
+    //     Serial.println(F("Begin failed!"));
+    //     Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+    //     Serial.println(F("2.Please recheck the connection."));
+    //     delay(100);
+    // }
 
     qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
@@ -79,7 +79,7 @@ void loop() {
     
     huskyLens();
     useSensors();
-    //delay(1000);
+    //delay(2000);
 }
 
 void huskyLens()
@@ -178,8 +178,8 @@ void led_off(int led){
 }
 
 bool black_line_in_middle() {
-    return sensorValues[MIDDLE_SENSOR] > sensorValues[LEFT_SENSOR] && 
-    sensorValues[MIDDLE_SENSOR] > sensorValues[RIGHT_SENSOR];
+    return (sensorValues[MIDDLE_SENSOR] > sensorValues[LEFT_SENSOR] && 
+    sensorValues[MIDDLE_SENSOR] > sensorValues[RIGHT_SENSOR]) || sensorValues[LEFT_SENSOR] == sensorValues[RIGHT_SENSOR];
 }
 
 bool right_hard_turn() {
