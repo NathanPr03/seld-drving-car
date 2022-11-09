@@ -24,6 +24,7 @@ int vehicleStatus;
 enum vehicleStati {STATIONARY = 0, MOVING = 1, ENCOUNTERED_OBSTACLE = 2};
 
 void setup() {
+    Serial.println("Main branch");
     Serial.begin(9600);
     
     Particle.variable("vehicleStatus", vehicleStatus);
@@ -83,7 +84,7 @@ void loop() {
     Serial.println("Start of loop");
     huskyLens();
     useSensors();
-    //delay(1000);
+    delay(1);
 }
 
 void huskyLens()

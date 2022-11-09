@@ -46,9 +46,16 @@ const int MIDDLE_SENSOR = 1;
 const int RIGHT_SENSOR = 2;
 
 const int LARGE_DISPARITY_BETWEEN_SENSORS = 60;
- 
+int vehicleStatus;
+
+enum vehicleStati {STATIONARY = 0, MOVING = 1, ENCOUNTERED_OBSTACLE = 2};
+
 void setup() {
+    Serial.println("Main branch");
     Serial.begin(9600);
+    
+    Particle.variable("vehicleStatus", vehicleStatus);
+    vehicleStatus = STATIONARY;
 
     Wire.begin();
     while (!huskylens.begin(Wire))
@@ -104,7 +111,7 @@ void loop() {
     Serial.println("Start of loop");
     huskyLens();
     useSensors();
-    //delay(1000);
+    delay(1);
 }
 
 void huskyLens()
@@ -121,6 +128,7 @@ void huskyLens()
             printResult(result);
             if(result.ID == 1){
                 motor_stop(2000);
+                vehicleStatus = ENCOUNTERED_OBSTACLE;
             }
         }    
     }
@@ -148,20 +156,26 @@ void drive(int direction)
     switch(direction) {
         case(TURN_LEFT_GRADUAL):
             turn_left_gradual(1);
+            vehicleStatus = MOVING;
             break;
         case(TURN_RIGHT_GRADUAL):
             turn_right_gradual(1);
+            vehicleStatus = MOVING;
             break;
         case(TURN_RIGHT_HARD):
             turn_right_hard(1);
+            vehicleStatus = MOVING;
             break;
         case(TURN_LEFT_HARD):
             turn_left_hard(1);
+            vehicleStatus = MOVING;
             break;
         case(STRAIGHT_AHEAD):
             drive_forward(1);
+            vehicleStatus = MOVING;
             break;
         default:
+            vehicleStatus = STATIONARY;
             Serial.println("-----NO MATCH FOUND-----");
             break;
     }
