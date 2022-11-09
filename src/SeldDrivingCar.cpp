@@ -3,7 +3,7 @@
 /******************************************************/
 
 #include "Particle.h"
-#line 1 "/Users/nathan/repos/particle/SeldDrivingCar/src/SeldDrivingCar.ino"
+#line 1 "/Users/nathan/repos/particle/self-driving-car/src/SeldDrivingCar.ino"
 #include <QTRSensors.h>
 #include "HUSKYLENS.h"
 
@@ -27,7 +27,7 @@ bool right_hard_turn();
 bool left_hard_turn();
 bool black_line_on_left();
 bool black_line_on_right();
-#line 4 "/Users/nathan/repos/particle/SeldDrivingCar/src/SeldDrivingCar.ino"
+#line 4 "/Users/nathan/repos/particle/self-driving-car/src/SeldDrivingCar.ino"
 using namespace std;
 
 int motorLeft[] = {A4, A5};
@@ -59,7 +59,7 @@ void setup() {
         delay(100);
     }
 
-    qtr.setTypeRC();    
+    qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
@@ -104,6 +104,7 @@ void loop() {
     Serial.println("Start of loop");
     huskyLens();
     useSensors();
+    //delay(1000);
 }
 
 void huskyLens()
