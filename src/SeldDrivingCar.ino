@@ -27,7 +27,7 @@ Command* driveCommand;
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Command pattern :)");
+    Serial.println("Command pattern 2 :)");
 
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
@@ -79,7 +79,7 @@ void loop() {
     
     huskyLens();
     useSensors();
-    //delay(2000);
+    delay(1);
 }
 
 void huskyLens()
@@ -162,7 +162,7 @@ void calculate_direction(){
         Serial.println("UNDO IS CALLED");
         if(driveCommand != NULL){
             vehicleStatus = MOVING;
-            driveCommand->undo();
+            //driveCommand->undo();
         }
     }
 }

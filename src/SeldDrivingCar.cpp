@@ -24,8 +24,8 @@ bool black_line_on_right();
 #line 5 "/Users/nathan/repos/particle/self-driving-car/src/SeldDrivingCar.ino"
 using namespace std;
 
-int motorLeft[2] = {A4, A5};
-int motorRight[2] = {D6, D5};
+int motorLeft[] = {A4, A5};
+int motorRight[] = {D6, D5};
 
 int onBoardLed = D7;
 
@@ -47,29 +47,24 @@ Command* driveCommand;
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Command pattern :)");
+    Serial.println("Command pattern 2 :)");
 
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
 
-    Wire.begin();
-    while (!huskylens.begin(Wire))
-    {
-        Serial.println(F("Begin failed!"));
-        Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
-        Serial.println(F("2.Please recheck the connection."));
-        delay(100);
-    }
+    // Wire.begin();
+    // while (!huskylens.begin(Wire))
+    // {
+    //     Serial.println(F("Begin failed!"));
+    //     Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+    //     Serial.println(F("2.Please recheck the connection."));
+    //     delay(100);
+    // }
 
     qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
     
     pinMode(onBoardLed, OUTPUT);
-
-    // for(int i = 0; i < 2; i++){
-    //     pinMode(motorLeft[i], OUTPUT);
-    //     pinMode(motorRight[i], OUTPUT);
-    // }
     
     led_on(onBoardLed);
     // analogRead() takes about 0.1 ms on an AVR.
@@ -101,14 +96,10 @@ void setup() {
 
 void loop() {
     Serial.println("Start of loop");
-    // digitalWrite(motorLeft[0], HIGH);
-    // digitalWrite(motorLeft[1], LOW);
-
-    // digitalWrite(motorRight[0], LOW);
-    // digitalWrite(motorRight[1], HIGH);
+    
     huskyLens();
     useSensors();
-    delay(2000);
+    delay(1);
 }
 
 void huskyLens()
@@ -161,29 +152,37 @@ void useSensors(){
 
     calculate_direction();
 
-    driveCommand->execute();
+    if(driveCommand != NULL) {
+        driveCommand->execute();
+    }
 }
 
 void calculate_direction(){
     if(black_line_in_middle()){
         Serial.println("MIDDLE IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(STRAIGHT_AHEAD, motorLeft, motorRight);
     }else if (right_hard_turn()) {
         Serial.println("HARD RIGHT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_RIGHT_HARD, motorLeft, motorRight);
     }else if (left_hard_turn()){
         Serial.println("HARD LEFT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_LEFT_HARD, motorLeft, motorRight);
     }else if(black_line_on_left()) {
         Serial.println("LEFT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_LEFT_GRADUAL, motorLeft, motorRight);
     }else if(black_line_on_right()){
         Serial.println("RIGHT IS CALLED");
+        vehicleStatus = MOVING;
         driveCommand = commandFactory->create(TURN_RIGHT_GRADUAL, motorLeft, motorRight);
     }else{
         Serial.println("UNDO IS CALLED");
         if(driveCommand != NULL){
-            driveCommand->undo();
+            vehicleStatus = MOVING;
+            //driveCommand->undo();
         }
     }
 }
@@ -199,8 +198,8 @@ void led_off(int led){
 }
 
 bool black_line_in_middle() {
-    return sensorValues[MIDDLE_SENSOR] > sensorValues[LEFT_SENSOR] && 
-    sensorValues[MIDDLE_SENSOR] > sensorValues[RIGHT_SENSOR];
+    return (sensorValues[MIDDLE_SENSOR] > sensorValues[LEFT_SENSOR] && 
+    sensorValues[MIDDLE_SENSOR] > sensorValues[RIGHT_SENSOR]) || sensorValues[LEFT_SENSOR] == sensorValues[RIGHT_SENSOR];
 }
 
 bool right_hard_turn() {
