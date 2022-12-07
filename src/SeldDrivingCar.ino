@@ -177,6 +177,18 @@ void led_off(int led){
     digitalWrite(led, LOW);
 }
 
+void motor_stop(int duration){
+    Serial.println("Stopping");
+
+    digitalWrite(motorLeft[0], LOW);
+    digitalWrite(motorLeft[1], LOW);
+
+    digitalWrite(motorRight[0], LOW);
+    digitalWrite(motorRight[1], LOW);
+
+    delay(duration);
+}
+
 bool black_line_in_middle() {
     return (sensorValues[MIDDLE_SENSOR] > sensorValues[LEFT_SENSOR] && 
     sensorValues[MIDDLE_SENSOR] > sensorValues[RIGHT_SENSOR]) || sensorValues[LEFT_SENSOR] == sensorValues[RIGHT_SENSOR];
