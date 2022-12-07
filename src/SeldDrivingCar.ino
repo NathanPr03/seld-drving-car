@@ -26,20 +26,20 @@ CommandFactory* commandFactory = new CommandFactory();
 Command* driveCommand;
 
 void setup() {
+    Serial.println("Main branch");
     Serial.begin(9600);
-    Serial.println("Command pattern 2 :)");
 
     Particle.variable("vehicleStatus", vehicleStatus);
     vehicleStatus = STATIONARY;
 
-    // Wire.begin();
-    // while (!huskylens.begin(Wire))
-    // {
-    //     Serial.println(F("Begin failed!"));
-    //     Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
-    //     Serial.println(F("2.Please recheck the connection."));
-    //     delay(100);
-    // }
+    Wire.begin();
+    while (!huskylens.begin(Wire))
+    {
+         Serial.println(F("Begin failed!"));
+         Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+         Serial.println(F("2.Please recheck the connection."));
+         delay(100);
+    }
 
     qtr.setTypeRC(); 
     qtr.setSensorPins((const uint8_t[]){A2, A1, A0}, SensorCount);
@@ -95,8 +95,8 @@ void huskyLens()
             HUSKYLENSResult result = huskylens.read();
             printResult(result);
             if(result.ID == 1){
+                motor_stop(2000);
                 vehicleStatus = ENCOUNTERED_OBSTACLE;
-                //motor_stop(2000);
             }
         }    
     }
@@ -162,7 +162,7 @@ void calculate_direction(){
         Serial.println("UNDO IS CALLED");
         if(driveCommand != NULL){
             vehicleStatus = MOVING;
-            //driveCommand->undo();
+            driveCommand->undo();
         }
     }
 }
